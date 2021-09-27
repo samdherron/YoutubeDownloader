@@ -13,16 +13,23 @@ using MediaToolkit;
 using System.Net;
 using System.Drawing;
 using System.Drawing.Imaging;
+using YoutubeDownloader.Helpers;
 
 namespace YoutubeDownloader.Services
 {
     public class DownloadingService
     {
-
+        public static DownloadManager downloadManager;
         public List<YoutubeVideoInfo> currentVideos = new List<YoutubeVideoInfo>();
+
+        public DownloadingService()
+        {
+            downloadManager = new DownloadManager();
+        }
 
         public async Task ProcessDownloadRequestAsync(string uri)
         {
+            
             YouTubeVideo video = null;
             using (var cli = Client.For(new YouTube()))
             {
@@ -44,6 +51,8 @@ namespace YoutubeDownloader.Services
                     currentVideos.Add(newVideoInfo);
 
                     await DownloadVideoAndPlayAsync(video, videoImagePath);
+
+                    downloadManager.UpdateJsonDownloadRecords(currentVideos);
                 }
             }
         }
@@ -84,6 +93,8 @@ namespace YoutubeDownloader.Services
 
             Process.Start(mp3FilePath);
 
+
+
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
@@ -96,15 +107,14 @@ namespace YoutubeDownloader.Services
             var mp3File = TagLib.File.Create(filePath);
 
             mp3File.Tag.Pictures = new TagLib.IPicture[]
-    {
-        new TagLib.Picture(new TagLib.ByteVector((byte[])new System.Drawing.ImageConverter().ConvertTo(System.Drawing.Image.FromFile(videoImagePath), typeof(byte[]))))
-        {
-            Type = TagLib.PictureType.FrontCover,
-            Description = "Cover",
-            MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg
-        }
-    };
-            var year = mp3File.Tag.Year;
+            {
+                new TagLib.Picture(new TagLib.ByteVector((byte[])new System.Drawing.ImageConverter().ConvertTo(System.Drawing.Image.FromFile(videoImagePath), typeof(byte[]))))
+                {
+                    Type = TagLib.PictureType.FrontCover,
+                    Description = "Cover",
+                    MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg
+                }
+            };
 
             mp3File.Save();
         }
@@ -127,7 +137,7 @@ namespace YoutubeDownloader.Services
         private string GetVideoImage(string uri, string videoTitle)
         {
             string videoID = uri.Substring(uri.IndexOf("?v=") + 3);
-            
+
             int index = videoID.IndexOf("&");
             if (index >= 0)
                 videoID = videoID.Substring(0, index);

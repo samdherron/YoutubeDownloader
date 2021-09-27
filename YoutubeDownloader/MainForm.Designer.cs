@@ -32,20 +32,19 @@ namespace YoutubeDownloader
             this.components = new System.ComponentModel.Container();
             this.tabControlAdv1 = new Syncfusion.Windows.Forms.Tools.TabControlAdv();
             this.tabPageAdv1 = new Syncfusion.Windows.Forms.Tools.TabPageAdv();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.Title = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Length = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Size = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gradientLabel1 = new Syncfusion.Windows.Forms.Tools.GradientLabel();
             this.txtUrl = new Syncfusion.Windows.Forms.Grid.GridAwareTextBox();
             this.sfButton1 = new Syncfusion.WinForms.Controls.SfButton();
             this.tabPageAdv2 = new Syncfusion.Windows.Forms.Tools.TabPageAdv();
             this.designTimeTabTypeLoader = new Syncfusion.Reflection.TypeLoader(this.components);
             this.flowLayout1 = new Syncfusion.Windows.Forms.Tools.FlowLayout(this.components);
+            this.youtubeVideoInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.listBox1 = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.tabControlAdv1)).BeginInit();
             this.tabControlAdv1.SuspendLayout();
             this.tabPageAdv1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.flowLayout1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.youtubeVideoInfoBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControlAdv1
@@ -72,7 +71,7 @@ namespace YoutubeDownloader
             // tabPageAdv1
             // 
             this.tabPageAdv1.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPageAdv1.Controls.Add(this.listView1);
+            this.tabPageAdv1.Controls.Add(this.listBox1);
             this.tabPageAdv1.Controls.Add(this.gradientLabel1);
             this.tabPageAdv1.Controls.Add(this.txtUrl);
             this.tabPageAdv1.Controls.Add(this.sfButton1);
@@ -87,31 +86,6 @@ namespace YoutubeDownloader
             this.tabPageAdv1.Text = "Downloads";
             this.tabPageAdv1.ThemesEnabled = true;
             // 
-            // listView1
-            // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.Title,
-            this.Length,
-            this.Size});
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(992, 326);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            // 
-            // Title
-            // 
-            this.Title.Text = "Title";
-            // 
-            // Length
-            // 
-            this.Length.Text = "Length";
-            // 
-            // Size
-            // 
-            this.Size.Text = "Size";
-            // 
             // gradientLabel1
             // 
             this.gradientLabel1.BackgroundColor = new Syncfusion.Drawing.BrushInfo(Syncfusion.Drawing.GradientStyle.PathRectangle, System.Drawing.Color.PaleVioletRed, System.Drawing.Color.Crimson);
@@ -120,7 +94,7 @@ namespace YoutubeDownloader
             | System.Windows.Forms.Border3DSide.Right) 
             | System.Windows.Forms.Border3DSide.Bottom)));
             this.gradientLabel1.BorderStyle = System.Windows.Forms.Border3DStyle.Raised;
-            this.gradientLabel1.Location = new System.Drawing.Point(398, 331);
+            this.gradientLabel1.Location = new System.Drawing.Point(398, 377);
             this.gradientLabel1.Name = "gradientLabel1";
             this.gradientLabel1.Size = new System.Drawing.Size(195, 23);
             this.gradientLabel1.TabIndex = 2;
@@ -132,7 +106,7 @@ namespace YoutubeDownloader
             this.txtUrl.AutoSuggestFormula = false;
             this.txtUrl.DisabledBackColor = System.Drawing.SystemColors.Window;
             this.txtUrl.EnabledBackColor = System.Drawing.SystemColors.Window;
-            this.txtUrl.Location = new System.Drawing.Point(12, 362);
+            this.txtUrl.Location = new System.Drawing.Point(12, 408);
             this.txtUrl.Name = "txtUrl";
             this.txtUrl.Size = new System.Drawing.Size(886, 22);
             this.txtUrl.TabIndex = 1;
@@ -142,7 +116,7 @@ namespace YoutubeDownloader
             this.sfButton1.AccessibleName = "Button";
             this.sfButton1.BackColor = System.Drawing.Color.DimGray;
             this.sfButton1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F);
-            this.sfButton1.Location = new System.Drawing.Point(903, 359);
+            this.sfButton1.Location = new System.Drawing.Point(903, 405);
             this.sfButton1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.sfButton1.Name = "sfButton1";
             this.sfButton1.Size = new System.Drawing.Size(75, 28);
@@ -174,6 +148,19 @@ namespace YoutubeDownloader
             // 
             this.flowLayout1.ContainerControl = this.tabPageAdv1;
             // 
+            // youtubeVideoInfoBindingSource
+            // 
+            this.youtubeVideoInfoBindingSource.DataSource = typeof(YoutubeDownloader.Models.YoutubeVideoInfo);
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 16;
+            this.listBox1.Location = new System.Drawing.Point(1, 0);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(988, 372);
+            this.listBox1.TabIndex = 4;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -187,6 +174,7 @@ namespace YoutubeDownloader
             this.tabPageAdv1.ResumeLayout(false);
             this.tabPageAdv1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.flowLayout1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.youtubeVideoInfoBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -195,16 +183,14 @@ namespace YoutubeDownloader
 
         private Syncfusion.Windows.Forms.Tools.TabControlAdv tabControlAdv1;
         private Syncfusion.Windows.Forms.Tools.TabPageAdv tabPageAdv1;
-        private System.Windows.Forms.ListView listView1;
         private Syncfusion.Windows.Forms.Tools.TabPageAdv tabPageAdv2;
         private Syncfusion.Reflection.TypeLoader designTimeTabTypeLoader;
         private Syncfusion.Windows.Forms.Tools.FlowLayout flowLayout1;
-        private System.Windows.Forms.ColumnHeader Title;
-        private System.Windows.Forms.ColumnHeader Length;
-        private System.Windows.Forms.ColumnHeader Size;
         private Syncfusion.Windows.Forms.Tools.GradientLabel gradientLabel1;
         private Syncfusion.Windows.Forms.Grid.GridAwareTextBox txtUrl;
         private Syncfusion.WinForms.Controls.SfButton sfButton1;
+        private System.Windows.Forms.BindingSource youtubeVideoInfoBindingSource;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }
 

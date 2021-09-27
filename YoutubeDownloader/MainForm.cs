@@ -8,17 +8,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using YoutubeDownloader.Models;
 using YoutubeDownloader.Services;
+using YoutubeDownloader.Helpers;
 
 namespace YoutubeDownloader
 {
     public partial class MainForm : Form
     {
-        DownloadingService downloadService;
+        public DownloadingService downloadService;
+        public DownloadManager downloadManager;
+        public List<YoutubeVideoInfo> currentRecords;
+
         public MainForm()
         {
             InitializeComponent();
             downloadService = new DownloadingService();
+            downloadManager = new DownloadManager();
+            currentRecords = downloadManager.GetJsonDownloadRecords();
+            listBox1.DataSource = currentRecords;
+            listBox1.Refresh();
       
         }
 
@@ -29,11 +38,17 @@ namespace YoutubeDownloader
                 Cursor.Current = Cursors.WaitCursor;
                 await downloadService.ProcessDownloadRequestAsync(txtUrl.Text);
                 Cursor.Current = Cursors.Default;
+                UpdateListViewRecords();
               
             } else
             {
                 MessageBox.Show("URL is invalid. Please try again...");
             }
+        }
+
+        private async void UpdateListViewRecords()
+        {
+            currentRecords = downloadManager.GetJsonDownloadRecords();      
         }
     }
 }
