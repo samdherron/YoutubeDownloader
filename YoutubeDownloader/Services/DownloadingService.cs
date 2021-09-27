@@ -10,6 +10,9 @@ using VideoLibrary;
 using YoutubeDownloader.Models;
 using MediaToolkit.Model;
 using MediaToolkit;
+using System.Net;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace YoutubeDownloader.Services
 {
@@ -20,14 +23,18 @@ namespace YoutubeDownloader.Services
 
         public async Task ProcessDownloadRequestAsync(string uri)
         {
-            YouTubeVideo video;
+            YouTubeVideo video = null;
             using (var cli = Client.For(new YouTube()))
             {
                 List<YouTubeVideo> videos = cli.GetAllVideosAsync(uri).Result.ToList();
-                //video = videos.Where(x => x.Resolution >= 720 && x.AudioBitrate != -1).FirstOrDefault();
-                video = videos.Where(x => x.AudioBitrate >= videos.Min(z => z.AudioBitrate) && x.Resolution != -1).FirstOrDefault();
+
+                video = videos.Where(x => x.AudioBitrate >= videos.Min(z => z.AudioBitrate)).FirstOrDefault();
+
 
                 YoutubeVideoInfo newVideoInfo = new YoutubeVideoInfo();
+
+
+                var videoImagePath = GetVideoImage(uri, video.Info.Title);
 
                 if (video != null)
                 {
@@ -36,45 +43,70 @@ namespace YoutubeDownloader.Services
 
                     currentVideos.Add(newVideoInfo);
 
-                    await DownloadVideoAndPlayAsync(video);
+                    await DownloadVideoAndPlayAsync(video, videoImagePath);
                 }
             }
         }
 
-        private async Task DownloadVideoAndPlayAsync(YouTubeVideo video)
+        private async Task DownloadVideoAndPlayAsync(YouTubeVideo video, string videoImagePath)
         {
             byte[] videoBytes = await video.GetBytesAsync();
 
-            //Stream videoStream = await video.StreamAsync();
-
             string safeFileName = new string(video.Title.Where(c => char.IsLetterOrDigit(c)).ToArray());
 
+            string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
 
+            string filePath = Path.Combine(folderPath, safeFileName + video.FileExtension);
 
-            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), safeFileName + video.FileExtension);
             string mp3FilePath = filePath.Replace(".mp4", ".mp3");
 
-            if (File.Exists(filePath))
+            if (!Directory.Exists(folderPath))
             {
-                File.Delete(filePath);
+                Directory.CreateDirectory(folderPath);
             }
+
 
             if (File.Exists(mp3FilePath))
             {
                 File.Delete(mp3FilePath);
             }
 
-            //using (FileStream f = new FileStream(filePath, FileMode.Create))
-            //{
-            //    videoStream.CopyTo(f);
-            //}
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
 
             File.WriteAllBytes(filePath, videoBytes);
 
             GenerateMp3File(filePath, mp3FilePath);
 
+            AddImageToFile(mp3FilePath, videoImagePath);
+
             Process.Start(mp3FilePath);
 
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+        }
+
+        private void AddImageToFile(string filePath, string videoImagePath)
+        {
+            var mp3File = TagLib.File.Create(filePath);
+
+            mp3File.Tag.Pictures = new TagLib.IPicture[]
+    {
+        new TagLib.Picture(new TagLib.ByteVector((byte[])new System.Drawing.ImageConverter().ConvertTo(System.Drawing.Image.FromFile(videoImagePath), typeof(byte[]))))
+        {
+            Type = TagLib.PictureType.FrontCover,
+            Description = "Cover",
+            MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg
+        }
+    };
+            var year = mp3File.Tag.Year;
+
+            mp3File.Save();
         }
 
         private void GenerateMp3File(string safeFileName, string mp3FilePath)
@@ -89,6 +121,42 @@ namespace YoutubeDownloader.Services
 
                 engine.Convert(inputFile, outputFile);
             }
+
+        }
+
+        private string GetVideoImage(string uri, string videoTitle)
+        {
+            string videoID = uri.Substring(uri.IndexOf("?v=") + 3);
+            
+            int index = videoID.IndexOf("&");
+            if (index >= 0)
+                videoID = videoID.Substring(0, index);
+
+            string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader", "Images");
+
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            string imageUri = "https://img.youtube.com/vi/" + videoID + "/maxresdefault.jpg";
+            string imagePath = Path.Combine(folderPath, videoTitle + ".jpg");
+
+            using (WebClient webClient = new WebClient())
+            {
+                byte[] data = webClient.DownloadData(imageUri);
+
+                using (MemoryStream mem = new MemoryStream(data))
+                {
+                    using (var videoImage = Image.FromStream(mem))
+                    {
+                        videoImage.Save(imagePath, ImageFormat.Jpeg);
+                    }
+                }
+
+            }
+
+            return imagePath;
         }
     }
 }
