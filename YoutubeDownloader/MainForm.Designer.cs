@@ -40,11 +40,13 @@ namespace YoutubeDownloader
             this.designTimeTabTypeLoader = new Syncfusion.Reflection.TypeLoader(this.components);
             this.flowLayout1 = new Syncfusion.Windows.Forms.Tools.FlowLayout(this.components);
             this.youtubeVideoInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.OpenUponDownloadSetting = new Syncfusion.Windows.Forms.Tools.CheckBoxAdv();
             ((System.ComponentModel.ISupportInitialize)(this.tabControlAdv1)).BeginInit();
             this.tabControlAdv1.SuspendLayout();
             this.tabPageAdv1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.flowLayout1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.youtubeVideoInfoBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OpenUponDownloadSetting)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControlAdv1
@@ -76,6 +78,7 @@ namespace YoutubeDownloader
             this.tabPageAdv1.Controls.Add(this.gradientLabel1);
             this.tabPageAdv1.Controls.Add(this.txtUrl);
             this.tabPageAdv1.Controls.Add(this.sfButton1);
+            this.tabPageAdv1.Controls.Add(this.OpenUponDownloadSetting);
             this.tabPageAdv1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.tabPageAdv1.Image = null;
             this.tabPageAdv1.ImageSize = new System.Drawing.Size(20, 20);
@@ -94,7 +97,7 @@ namespace YoutubeDownloader
             this.sfListView1.ItemWidth = 356D;
             this.sfListView1.Location = new System.Drawing.Point(0, 0);
             this.sfListView1.Name = "sfListView1";
-            this.sfListView1.Size = new System.Drawing.Size(991, 368);
+            this.sfListView1.Size = new System.Drawing.Size(991, 349);
             this.sfListView1.TabIndex = 5;
             this.sfListView1.Text = "sfListView1";
             // 
@@ -106,7 +109,7 @@ namespace YoutubeDownloader
             | System.Windows.Forms.Border3DSide.Right) 
             | System.Windows.Forms.Border3DSide.Bottom)));
             this.gradientLabel1.BorderStyle = System.Windows.Forms.Border3DStyle.Raised;
-            this.gradientLabel1.Location = new System.Drawing.Point(398, 373);
+            this.gradientLabel1.Location = new System.Drawing.Point(398, 354);
             this.gradientLabel1.Name = "gradientLabel1";
             this.gradientLabel1.Size = new System.Drawing.Size(195, 23);
             this.gradientLabel1.TabIndex = 2;
@@ -118,7 +121,7 @@ namespace YoutubeDownloader
             this.txtUrl.AutoSuggestFormula = false;
             this.txtUrl.DisabledBackColor = System.Drawing.SystemColors.Window;
             this.txtUrl.EnabledBackColor = System.Drawing.SystemColors.Window;
-            this.txtUrl.Location = new System.Drawing.Point(12, 404);
+            this.txtUrl.Location = new System.Drawing.Point(12, 385);
             this.txtUrl.Name = "txtUrl";
             this.txtUrl.Size = new System.Drawing.Size(886, 22);
             this.txtUrl.TabIndex = 1;
@@ -128,7 +131,7 @@ namespace YoutubeDownloader
             this.sfButton1.AccessibleName = "Button";
             this.sfButton1.BackColor = System.Drawing.Color.DimGray;
             this.sfButton1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F);
-            this.sfButton1.Location = new System.Drawing.Point(903, 401);
+            this.sfButton1.Location = new System.Drawing.Point(903, 382);
             this.sfButton1.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.sfButton1.Name = "sfButton1";
             this.sfButton1.Size = new System.Drawing.Size(75, 28);
@@ -164,6 +167,17 @@ namespace YoutubeDownloader
             // 
             this.youtubeVideoInfoBindingSource.DataSource = typeof(YoutubeDownloader.Models.YoutubeVideoInfo);
             // 
+            // OpenUponDownloadSetting
+            // 
+            this.OpenUponDownloadSetting.BeforeTouchSize = new System.Drawing.Size(100, 21);
+            this.OpenUponDownloadSetting.ImageCheckBoxSize = new System.Drawing.Size(16, 16);
+            this.OpenUponDownloadSetting.Location = new System.Drawing.Point(445, 415);
+            this.OpenUponDownloadSetting.Name = "OpenUponDownloadSetting";
+            this.OpenUponDownloadSetting.Size = new System.Drawing.Size(100, 21);
+            this.OpenUponDownloadSetting.TabIndex = 6;
+            this.OpenUponDownloadSetting.Text = "Auto Play";
+            this.OpenUponDownloadSetting.CheckStateChanged += new System.EventHandler(this.OpenUponDownloadSetting_CheckStateChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -178,6 +192,7 @@ namespace YoutubeDownloader
             this.tabPageAdv1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.flowLayout1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.youtubeVideoInfoBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.OpenUponDownloadSetting)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -194,6 +209,7 @@ namespace YoutubeDownloader
         private Syncfusion.WinForms.Controls.SfButton sfButton1;
         private System.Windows.Forms.BindingSource youtubeVideoInfoBindingSource;
         private Syncfusion.WinForms.ListView.SfListView sfListView1;
+        private Syncfusion.Windows.Forms.Tools.CheckBoxAdv OpenUponDownloadSetting;
     }
 }
 

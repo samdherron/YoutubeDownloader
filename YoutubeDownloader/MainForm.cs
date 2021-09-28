@@ -20,6 +20,7 @@ namespace YoutubeDownloader
         public DownloadingService downloadService;
         public DownloadManager downloadManager;
         public List<YoutubeVideoInfo> currentRecords;
+        public static bool AutoPlay = false;
 
         public MainForm()
         {
@@ -75,6 +76,11 @@ namespace YoutubeDownloader
             currentRecords = currentRecords.OrderByDescending(x => x.DownloadedAt).ToList();
             sfListView1.DataSource = currentRecords;
             sfListView1.View.Refresh();
+        }
+
+        private void OpenUponDownloadSetting_CheckStateChanged(object sender, EventArgs e)
+        {
+            AutoPlay = OpenUponDownloadSetting.Checked;
         }
     }
 }

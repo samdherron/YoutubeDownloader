@@ -52,14 +52,19 @@ namespace YoutubeDownloader.Services
 
                     currentVideos.Add(newVideoInfo);
 
-                    await DownloadVideoAndPlayAsync(video, videoImagePath);
+                    var mp3FilePath = await DownloadVideoAsync(video, videoImagePath);
+
+                    if (MainForm.AutoPlay)
+                    {
+                        Process.Start(mp3FilePath);
+                    }
 
                     downloadManager.UpdateJsonDownloadRecords(currentVideos);
                 }
             }
         }
 
-        private async Task DownloadVideoAndPlayAsync(YouTubeVideo video, string videoImagePath)
+        private async Task<string> DownloadVideoAsync(YouTubeVideo video, string videoImagePath)
         {
             byte[] videoBytes = await video.GetBytesAsync();
 
@@ -93,12 +98,12 @@ namespace YoutubeDownloader.Services
 
             AddImageToFile(mp3FilePath, videoImagePath);
 
-            Process.Start(mp3FilePath);
-
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
             }
+
+            return mp3FilePath;
 
         }
 
