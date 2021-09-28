@@ -75,6 +75,11 @@ namespace YoutubeDownloader.Helpers
                 downloadRecords = JsonConvert.DeserializeObject<List<YoutubeVideoInfo>>(File.ReadAllText(filePath));
             }
 
+            if (downloadRecords != null)
+            {
+                downloadRecords = downloadRecords.OrderByDescending(x => x.DownloadedAt).ToList();
+            }
+
             return downloadRecords;
         }
     }

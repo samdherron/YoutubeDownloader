@@ -37,17 +37,18 @@ namespace YoutubeDownloader.Services
 
                 video = videos.Where(x => x.AudioBitrate >= videos.Min(z => z.AudioBitrate)).FirstOrDefault();
 
-
                 YoutubeVideoInfo newVideoInfo = new YoutubeVideoInfo();
 
+                string safeTitle = ValidationHelper.SafeVideoTitle(video.Info.Title);
 
-                var videoImagePath = GetVideoImage(uri, video.Info.Title);
+                var videoImagePath = GetVideoImage(uri, safeTitle);
 
                 if (video != null)
                 {
-                    newVideoInfo.Name = video.Info.Title;
+                    newVideoInfo.Name = safeTitle;
                     newVideoInfo.Length = video.Info.LengthSeconds;
                     newVideoInfo.VideoImagePath = videoImagePath;
+                    newVideoInfo.DownloadedAt = DateTime.Now;
 
                     currentVideos.Add(newVideoInfo);
 
@@ -93,8 +94,6 @@ namespace YoutubeDownloader.Services
             AddImageToFile(mp3FilePath, videoImagePath);
 
             Process.Start(mp3FilePath);
-
-
 
             if (File.Exists(filePath))
             {
@@ -151,11 +150,19 @@ namespace YoutubeDownloader.Services
             }
 
             string imageUri = "https://img.youtube.com/vi/" + videoID + "/maxresdefault.jpg";
+            string backupImageUri = "https://img.youtube.com/vi/" + videoID + "/hqdefault.jpg";
             string imagePath = Path.Combine(folderPath, videoTitle + ".jpg");
 
             using (WebClient webClient = new WebClient())
             {
-                byte[] data = webClient.DownloadData(imageUri);
+                byte[] data = null;
+                try
+                {
+                    data = webClient.DownloadData(imageUri);
+                } catch
+                {
+                    data = webClient.DownloadData(backupImageUri);
+                }
 
                 using (MemoryStream mem = new MemoryStream(data))
                 {

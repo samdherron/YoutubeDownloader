@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using YoutubeDownloader.Models;
 using YoutubeDownloader.Services;
 using YoutubeDownloader.Helpers;
+using System.Threading;
 
 namespace YoutubeDownloader
 {
@@ -55,7 +56,10 @@ namespace YoutubeDownloader
             if (txtUrl.TextLength > 0 && Uri.IsWellFormedUriString(txtUrl.Text, UriKind.RelativeOrAbsolute))
             {
                 Cursor.Current = Cursors.WaitCursor;
-                await downloadService.ProcessDownloadRequestAsync(txtUrl.Text);
+                await Task.Run(async () => {
+                    await downloadService.ProcessDownloadRequestAsync(txtUrl.Text);
+                    });
+                //await downloadService.ProcessDownloadRequestAsync(txtUrl.Text);
                 Cursor.Current = Cursors.Default;
                 UpdateListViewRecords();
               
@@ -67,7 +71,10 @@ namespace YoutubeDownloader
 
         private async void UpdateListViewRecords()
         {
-            currentRecords = downloadManager.GetJsonDownloadRecords();      
+            currentRecords = downloadManager.GetJsonDownloadRecords();
+            currentRecords = currentRecords.OrderByDescending(x => x.DownloadedAt).ToList();
+            sfListView1.DataSource = currentRecords;
+            sfListView1.View.Refresh();
         }
     }
 }

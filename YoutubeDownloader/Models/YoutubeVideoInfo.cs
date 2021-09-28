@@ -9,13 +9,12 @@ namespace YoutubeDownloader.Models
 {
     public class YoutubeVideoInfo
     {
-        private DateTime _downloadedAt;
         public string Name { get; set; }
         public int? Length { get; set; }
         public int FileSize { get; set; }
         public string State { get; set; }
 
-        public DateTime DownloadedAt { get { return _downloadedAt; } set { _downloadedAt =  DateTime.UtcNow; } }
+        public DateTime DownloadedAt { get; set; }
 
         public string VideoImagePath { get; set; }
     }
