@@ -23,13 +23,32 @@ namespace YoutubeDownloader
         public MainForm()
         {
             InitializeComponent();
+            
             downloadService = new DownloadingService();
             downloadManager = new DownloadManager();
+
+            sfListView1.DisplayMember = "Name";
+            sfListView1.ValueMember = "Name";
+            sfListView1.DrawItem += new EventHandler<Syncfusion.WinForms.ListView.Events.DrawItemEventArgs>(SfListView1_DrawImages);
             currentRecords = downloadManager.GetJsonDownloadRecords();
-            listBox1.DataSource = currentRecords;
-            listBox1.Refresh();
-      
+            sfListView1.DataSource = currentRecords;
         }
+
+        private void SfListView1_DrawImages(object sender, Syncfusion.WinForms.ListView.Events.DrawItemEventArgs e)
+        {
+            YoutubeVideoInfo video = currentRecords.Where(x => x.Name == e.Text).FirstOrDefault();
+            Image videoImage = Image.FromFile(video.VideoImagePath);
+            videoImage = resizeImage(videoImage, new Size(192, 96));
+            e.Image = videoImage;
+            e.ImageAlignment = ContentAlignment.MiddleLeft;
+        }
+
+        public static Image resizeImage(Image imgToResize, Size size)
+        {
+            return (Image)(new Bitmap(imgToResize, size));
+        }
+
+
 
         private async void sfButton1_Click(object sender, EventArgs e)
         {

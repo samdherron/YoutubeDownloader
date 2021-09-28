@@ -47,6 +47,7 @@ namespace YoutubeDownloader.Services
                 {
                     newVideoInfo.Name = video.Info.Title;
                     newVideoInfo.Length = video.Info.LengthSeconds;
+                    newVideoInfo.VideoImagePath = videoImagePath;
 
                     currentVideos.Add(newVideoInfo);
 
