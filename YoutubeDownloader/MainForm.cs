@@ -12,6 +12,8 @@ using YoutubeDownloader.Models;
 using YoutubeDownloader.Services;
 using YoutubeDownloader.Helpers;
 using System.Threading;
+using Syncfusion.WinForms.Theme;
+using Syncfusion.Windows.Forms;
 
 namespace YoutubeDownloader
 {
@@ -24,8 +26,14 @@ namespace YoutubeDownloader
 
         public MainForm()
         {
+            FontHelper.CanOverrideFontFamily = true;
+            FontHelper.FontFamily = new FontFamily("Nirmala UI");
+
             InitializeComponent();
-            
+
+            sfSkinManager1.Controls = this;
+            sfSkinManager1.VisualTheme = VisualTheme.Office2016Black;
+
             downloadService = new DownloadingService();
             downloadManager = new DownloadManager();
 
@@ -52,7 +60,7 @@ namespace YoutubeDownloader
 
 
 
-        private async void sfButton1_Click(object sender, EventArgs e)
+        private async void metroButton1_Click(object sender, EventArgs e)
         {
             if (txtUrl.TextLength > 0 && Uri.IsWellFormedUriString(txtUrl.Text, UriKind.RelativeOrAbsolute))
             {
@@ -78,9 +86,27 @@ namespace YoutubeDownloader
             sfListView1.View.Refresh();
         }
 
-        private void OpenUponDownloadSetting_CheckStateChanged(object sender, EventArgs e)
+        private void AutoPlaySetting_CheckStateChanged(object sender, EventArgs e)
         {
-            AutoPlay = OpenUponDownloadSetting.Checked;
+            AutoPlay = AutoPlaySetting.Checked;
+        }
+
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        //Enables dragging since the border is set to none
+        private void MainForm_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+            }
         }
     }
 }
