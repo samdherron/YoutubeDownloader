@@ -25,5 +25,14 @@ namespace YoutubeDownloader.Helpers
             return safeTitle;
 
         }
+
+        public static string RemoveWhitespace(string title)
+        {
+            string returnVal = "";
+
+            returnVal = new string(title.Where(c => char.IsLetterOrDigit(c)).ToArray());
+
+            return returnVal;
+        }
     }
 }

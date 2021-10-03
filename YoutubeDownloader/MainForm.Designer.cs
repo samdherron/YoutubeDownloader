@@ -39,9 +39,9 @@ namespace YoutubeDownloader
             this.flowLayout1 = new Syncfusion.Windows.Forms.Tools.FlowLayout(this.components);
             this.sfSkinManager1 = new Syncfusion.WinForms.Controls.SfSkinManager(this.components);
             this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-            this.youtubeVideoInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.metroButton1 = new MetroFramework.Controls.MetroButton();
             this.AutoPlaySetting = new MetroFramework.Controls.MetroCheckBox();
+            this.youtubeVideoInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.tabControlAdv1)).BeginInit();
             this.tabControlAdv1.SuspendLayout();
             this.tabPageAdv1.SuspendLayout();
@@ -101,6 +101,7 @@ namespace YoutubeDownloader
             this.sfListView1.Size = new System.Drawing.Size(1141, 592);
             this.sfListView1.TabIndex = 5;
             this.sfListView1.Text = "sfListView1";
+            this.sfListView1.DoubleClick += new System.EventHandler(this.SfListView1_DoubleClick);
             // 
             // txtUrl
             // 
@@ -156,10 +157,6 @@ namespace YoutubeDownloader
             this.metroLabel1.UseCustomBackColor = true;
             this.metroLabel1.UseStyleColors = true;
             // 
-            // youtubeVideoInfoBindingSource
-            // 
-            this.youtubeVideoInfoBindingSource.DataSource = typeof(YoutubeDownloader.Models.YoutubeVideoInfo);
-            // 
             // metroButton1
             // 
             this.metroButton1.Location = new System.Drawing.Point(1027, 627);
@@ -182,6 +179,10 @@ namespace YoutubeDownloader
             this.AutoPlaySetting.Text = "Auto Play";
             this.AutoPlaySetting.UseSelectable = true;
             this.AutoPlaySetting.CheckStateChanged += new System.EventHandler(this.AutoPlaySetting_CheckStateChanged);
+            // 
+            // youtubeVideoInfoBindingSource
+            // 
+            this.youtubeVideoInfoBindingSource.DataSource = typeof(YoutubeDownloader.Models.YoutubeVideoInfo);
             // 
             // MainForm
             // 

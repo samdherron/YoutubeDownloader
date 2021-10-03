@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -81,6 +82,30 @@ namespace YoutubeDownloader.Helpers
             }
 
             return downloadRecords;
+        }
+
+        public void PlaySongFromListview(string safeName, string fileDirectory, YoutubeVideoInfo selectedItem)
+        {
+            if (selectedItem != null && !string.IsNullOrEmpty(selectedItem.Name))
+            {
+                if (Directory.Exists(fileDirectory))
+                {
+                    if (Directory.GetFiles(fileDirectory).Any(x => x.Contains(safeName)))
+                    {
+
+                        string filePath = Path.Combine(fileDirectory, safeName + ".mp3");
+
+                        try
+                        {
+                            Process.Start(filePath);
+                        }
+                        catch
+                        {
+                            MessageBox.Show("There was an issue playing the song.");
+                        }
+                    }
+                }
+            }
         }
     }
 }

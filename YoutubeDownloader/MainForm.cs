@@ -14,6 +14,7 @@ using YoutubeDownloader.Helpers;
 using System.Threading;
 using Syncfusion.WinForms.Theme;
 using Syncfusion.Windows.Forms;
+using System.IO;
 
 namespace YoutubeDownloader
 {
@@ -23,6 +24,7 @@ namespace YoutubeDownloader
         public DownloadManager downloadManager;
         public List<YoutubeVideoInfo> currentRecords;
         public static bool AutoPlay = false;
+        public static string MusicDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
 
         public MainForm()
         {
@@ -56,6 +58,14 @@ namespace YoutubeDownloader
         public static Image resizeImage(Image imgToResize, Size size)
         {
             return (Image)(new Bitmap(imgToResize, size));
+        }
+
+        private void SfListView1_DoubleClick(object sender, EventArgs e)
+        {
+            var selectedItem = (YoutubeVideoInfo) sfListView1.SelectedItem;
+            var safeName = ValidationHelper.RemoveWhitespace(selectedItem.Name);
+
+            downloadManager.PlaySongFromListview(safeName, MusicDirectory, selectedItem);
         }
 
 

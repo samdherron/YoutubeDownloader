@@ -68,7 +68,7 @@ namespace YoutubeDownloader.Services
         {
             byte[] videoBytes = await video.GetBytesAsync();
 
-            string safeFileName = new string(video.Title.Where(c => char.IsLetterOrDigit(c)).ToArray());
+            string safeFileName = ValidationHelper.RemoveWhitespace(video.Title);
 
             string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
 
