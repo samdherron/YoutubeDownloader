@@ -9,3 +9,4 @@ TODO:
 - Add progress bar for downloads
 - Possibly experiment with other nuget packages to download entire playlists at once
 - Implement search feature for download grid
+- Implement automatic limit for download history... example: only log the last 20 downloads so the json file remains small
