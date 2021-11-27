@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using VideoLibrary;
+using YoutubeExplode;
 using YoutubeDownloader.Models;
 using MediaToolkit.Model;
 using MediaToolkit;
@@ -14,6 +14,8 @@ using System.Net;
 using System.Drawing;
 using System.Drawing.Imaging;
 using YoutubeDownloader.Helpers;
+using YoutubeExplode.Videos;
+using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownloader.Services
 {
@@ -29,83 +31,110 @@ namespace YoutubeDownloader.Services
 
         public async Task ProcessDownloadRequestAsync(string uri)
         {
-            
-            YouTubeVideo video = null;
-            using (var cli = Client.For(new YouTube()))
-            {
-                List<YouTubeVideo> videos = cli.GetAllVideosAsync(uri).Result.ToList();
 
-                video = videos.Where(x => x.AudioBitrate >= videos.Min(z => z.AudioBitrate)).FirstOrDefault();
+            var youtube = new YoutubeClient();
+
+            string validatedUri = ValidationHelper.RemovePlaylistIdentifier(uri);
+
+            var videoInfo = await youtube.Videos.GetAsync(validatedUri);
+
+            var streamManifest = await youtube.Videos.Streams.GetManifestAsync(videoInfo.Id);
+
+            var streamInfo = streamManifest.GetAudioOnlyStreams().Where(x => x.Container.Name == "mp4").FirstOrDefault();
 
                 YoutubeVideoInfo newVideoInfo = new YoutubeVideoInfo();
 
-                string safeTitle = ValidationHelper.SafeVideoTitle(video.Info.Title);
+                string safeTitle = ValidationHelper.SafeVideoTitle(videoInfo.Title);
 
-                var videoImagePath = GetVideoImage(uri, safeTitle);
+                var videoImagePath = GetVideoImage(uri, safeTitle, videoInfo.Id);
 
-                if (video != null)
+                if (streamInfo != null)
                 {
                     newVideoInfo.Name = safeTitle;
-                    newVideoInfo.Length = video.Info.LengthSeconds;
+                    newVideoInfo.Length = videoInfo.Duration.Value;
                     newVideoInfo.VideoImagePath = videoImagePath;
                     newVideoInfo.DownloadedAt = DateTime.Now;
 
                     currentVideos.Add(newVideoInfo);
 
-                    var mp3FilePath = await DownloadVideoAsync(video, videoImagePath);
 
-                    if (MainForm.AutoPlay)
+                string safeFileName = ValidationHelper.RemoveWhitespace(videoInfo.Title);
+
+                string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
+
+                string filePath = Path.Combine(folderPath, safeFileName + "." + streamInfo.Container.Name);
+
+                await youtube.Videos.Streams.DownloadAsync(streamInfo, filePath);
+
+                AddImageToFile(filePath, videoImagePath);
+
+                //var mp3FilePath = await DownloadVideoAsync(video, videoImagePath);
+
+                if (MainForm.AutoPlay)
                     {
-                        Process.Start(mp3FilePath);
+                        Process.Start(filePath);
                     }
 
                     downloadManager.UpdateJsonDownloadRecords(currentVideos);
                 }
-            }
         }
 
-        private async Task<string> DownloadVideoAsync(YouTubeVideo video, string videoImagePath)
+        private string GetIdString(string uri)
         {
-            byte[] videoBytes = await video.GetBytesAsync();
-
-            string safeFileName = ValidationHelper.RemoveWhitespace(video.Title);
-
-            string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
-
-            string filePath = Path.Combine(folderPath, safeFileName + video.FileExtension);
-
-            string mp3FilePath = filePath.Replace(".mp4", ".mp3");
-
-            if (!Directory.Exists(folderPath))
+            int index = 0;
+            if (uri.Contains("youtu.be")) 
             {
-                Directory.CreateDirectory(folderPath);
+                index = uri.IndexOf(".be/");
+            } else if (uri.Contains("?v="))
+            {
+                index = uri.IndexOf("h?v=");
             }
 
-
-            if (File.Exists(mp3FilePath))
-            {
-                File.Delete(mp3FilePath);
-            }
-
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-
-            File.WriteAllBytes(filePath, videoBytes);
-
-            GenerateMp3File(filePath, mp3FilePath);
-
-            AddImageToFile(mp3FilePath, videoImagePath);
-
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-
-            return mp3FilePath;
-
+            return uri.Substring(index + 4);
         }
+
+        //private async Task<string> DownloadVideoAsync(YoutubeVideo video, string videoImagePath)
+        //{
+        //    byte[] videoBytes = await video.GetBytesAsync();
+
+        //    string safeFileName = ValidationHelper.RemoveWhitespace(video.Title);
+
+        //    string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
+
+        //    string filePath = Path.Combine(folderPath, safeFileName + video.FileExtension);
+
+        //    string mp3FilePath = filePath.Replace(".mp4", ".mp3");
+
+        //    if (!Directory.Exists(folderPath))
+        //    {
+        //        Directory.CreateDirectory(folderPath);
+        //    }
+
+
+        //    if (File.Exists(mp3FilePath))
+        //    {
+        //        File.Delete(mp3FilePath);
+        //    }
+
+        //    if (File.Exists(filePath))
+        //    {
+        //        File.Delete(filePath);
+        //    }
+
+        //    File.WriteAllBytes(filePath, videoBytes);
+
+        //    GenerateMp3File(filePath, mp3FilePath);
+
+        //    AddImageToFile(mp3FilePath, videoImagePath);
+
+        //    if (File.Exists(filePath))
+        //    {
+        //        File.Delete(filePath);
+        //    }
+
+        //    return mp3FilePath;
+
+        //}
 
         private void AddImageToFile(string filePath, string videoImagePath)
         {
@@ -139,14 +168,8 @@ namespace YoutubeDownloader.Services
 
         }
 
-        private string GetVideoImage(string uri, string videoTitle)
+        private string GetVideoImage(string uri, string videoTitle, string videoId)
         {
-            string videoID = uri.Substring(uri.IndexOf("?v=") + 3);
-
-            int index = videoID.IndexOf("&");
-            if (index >= 0)
-                videoID = videoID.Substring(0, index);
-
             string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader", "Images");
 
             if (!Directory.Exists(folderPath))
@@ -154,8 +177,8 @@ namespace YoutubeDownloader.Services
                 Directory.CreateDirectory(folderPath);
             }
 
-            string imageUri = "https://img.youtube.com/vi/" + videoID + "/maxresdefault.jpg";
-            string backupImageUri = "https://img.youtube.com/vi/" + videoID + "/hqdefault.jpg";
+            string imageUri = "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
+            string backupImageUri = "https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg";
             string imagePath = Path.Combine(folderPath, videoTitle + ".jpg");
 
             using (WebClient webClient = new WebClient())
