@@ -93,6 +93,7 @@ namespace YoutubeDownloader
                 metroButton1.Enabled = false;
                 metroProgressBar1.Enabled = true;
                 metroProgressBar1.HideProgressText = false;
+                metroProgressBar1.Value = 0;
                 await Task.Run(async () => {
                     await downloadService.ProcessDownloadRequestAsync(txtUrl.Text);
                     });
