@@ -39,11 +39,26 @@ namespace YoutubeDownloader
             downloadService = new DownloadingService();
             downloadManager = new DownloadManager();
 
+            downloadService.DownloadedCompleted += DownloadComplete;
+            downloadService.ProgressHandler.ProgressChanged += DownloadProgressChanged;
+
             sfListView1.DisplayMember = "Name";
             sfListView1.ValueMember = "Name";
             sfListView1.DrawItem += new EventHandler<Syncfusion.WinForms.ListView.Events.DrawItemEventArgs>(SfListView1_DrawImages);
             currentRecords = downloadManager.GetJsonDownloadRecords();
             sfListView1.DataSource = currentRecords;
+        }
+
+        private void DownloadProgressChanged(object sender, double e)
+        {
+            if ((int) (e * 100) > metroProgressBar1.Value) {
+                metroProgressBar1.Value = (int) (e * 100);
+            }
+        }
+
+        private void DownloadComplete(object sender, EventArgs e)
+        {
+            txtUrl.Clear();
         }
 
         private void SfListView1_DrawImages(object sender, Syncfusion.WinForms.ListView.Events.DrawItemEventArgs e)
@@ -75,10 +90,16 @@ namespace YoutubeDownloader
             if (txtUrl.TextLength > 0 && Uri.IsWellFormedUriString(txtUrl.Text, UriKind.RelativeOrAbsolute))
             {
                 Cursor.Current = Cursors.WaitCursor;
+                metroButton1.Enabled = false;
+                metroProgressBar1.Enabled = true;
+                metroProgressBar1.HideProgressText = false;
                 await Task.Run(async () => {
                     await downloadService.ProcessDownloadRequestAsync(txtUrl.Text);
                     });
                 //await downloadService.ProcessDownloadRequestAsync(txtUrl.Text);
+                metroButton1.Enabled = true;
+                metroProgressBar1.Enabled = false;
+                metroProgressBar1.HideProgressText = false;
                 Cursor.Current = Cursors.Default;
                 UpdateListViewRecords();
               

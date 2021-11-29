@@ -16,6 +16,7 @@ using System.Drawing.Imaging;
 using YoutubeDownloader.Helpers;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
+using System.Net.Http;
 
 namespace YoutubeDownloader.Services
 {
@@ -23,10 +24,15 @@ namespace YoutubeDownloader.Services
     {
         public static DownloadManager downloadManager;
         public List<YoutubeVideoInfo> currentVideos = new List<YoutubeVideoInfo>();
+        public delegate void DownloadCompleteNotify();
+        public event EventHandler DownloadedCompleted;
+        public Progress<double> ProgressHandler;
+
 
         public DownloadingService()
         {
             downloadManager = new DownloadManager();
+            ProgressHandler = new Progress<double>();
         }
 
         public async Task ProcessDownloadRequestAsync(string uri)
@@ -64,15 +70,13 @@ namespace YoutubeDownloader.Services
 
                 string filePath = Path.Combine(folderPath, safeFileName + "." + streamInfo.Container.Name);
 
-                await youtube.Videos.Streams.DownloadAsync(streamInfo, filePath);
+                await youtube.Videos.Streams.DownloadAsync(streamInfo, filePath, ProgressHandler);
 
-                AddImageToFile(filePath, videoImagePath);
-
-                //var mp3FilePath = await DownloadVideoAsync(video, videoImagePath);
+                var mp3FilePath = ConvertToMp3(filePath, videoImagePath);
 
                 if (MainForm.AutoPlay)
                     {
-                        Process.Start(filePath);
+                        Process.Start(mp3FilePath);
                     }
 
                     downloadManager.UpdateJsonDownloadRecords(currentVideos);
@@ -93,48 +97,28 @@ namespace YoutubeDownloader.Services
             return uri.Substring(index + 4);
         }
 
-        //private async Task<string> DownloadVideoAsync(YoutubeVideo video, string videoImagePath)
-        //{
-        //    byte[] videoBytes = await video.GetBytesAsync();
-
-        //    string safeFileName = ValidationHelper.RemoveWhitespace(video.Title);
-
-        //    string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
-
-        //    string filePath = Path.Combine(folderPath, safeFileName + video.FileExtension);
-
-        //    string mp3FilePath = filePath.Replace(".mp4", ".mp3");
-
-        //    if (!Directory.Exists(folderPath))
-        //    {
-        //        Directory.CreateDirectory(folderPath);
-        //    }
+       
+        public string ConvertToMp3(string filePath, string videoImagePath) { 
+            string mp3FilePath = filePath.Replace(".mp4", ".mp3");
 
 
-        //    if (File.Exists(mp3FilePath))
-        //    {
-        //        File.Delete(mp3FilePath);
-        //    }
+            if (File.Exists(mp3FilePath))
+            {
+                File.Delete(mp3FilePath);
+            }
 
-        //    if (File.Exists(filePath))
-        //    {
-        //        File.Delete(filePath);
-        //    }
+            GenerateMp3File(filePath, mp3FilePath);
 
-        //    File.WriteAllBytes(filePath, videoBytes);
+            AddImageToFile(mp3FilePath, videoImagePath);
 
-        //    GenerateMp3File(filePath, mp3FilePath);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
 
-        //    AddImageToFile(mp3FilePath, videoImagePath);
+            return mp3FilePath;
 
-        //    if (File.Exists(filePath))
-        //    {
-        //        File.Delete(filePath);
-        //    }
-
-        //    return mp3FilePath;
-
-        //}
+        }
 
         private void AddImageToFile(string filePath, string videoImagePath)
         {
