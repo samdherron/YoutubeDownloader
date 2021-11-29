@@ -34,5 +34,17 @@ namespace YoutubeDownloader.Helpers
 
             return returnVal;
         }
+
+        internal static string RemovePlaylistIdentifier(string uri)
+        {
+            int index = uri.IndexOf("&list");
+
+            if (index > 0)
+            {
+                return uri.Substring(0, index);
+            }
+
+            return uri;
+        }
     }
 }

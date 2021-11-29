@@ -10,7 +10,7 @@ namespace YoutubeDownloader.Models
     public class YoutubeVideoInfo
     {
         public string Name { get; set; }
-        public int? Length { get; set; }
+        public TimeSpan Length { get; set; }
         public int FileSize { get; set; }
         public string State { get; set; }
 
