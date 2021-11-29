@@ -33,18 +33,20 @@ namespace YoutubeDownloader
             this.tabControlAdv1 = new Syncfusion.Windows.Forms.Tools.TabControlAdv();
             this.tabPageAdv1 = new Syncfusion.Windows.Forms.Tools.TabPageAdv();
             this.sfListView1 = new Syncfusion.WinForms.ListView.SfListView();
+            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
             this.txtUrl = new Syncfusion.Windows.Forms.Grid.GridAwareTextBox();
+            this.metroButton1 = new MetroFramework.Controls.MetroButton();
             this.tabPageAdv2 = new Syncfusion.Windows.Forms.Tools.TabPageAdv();
             this.designTimeTabTypeLoader = new Syncfusion.Reflection.TypeLoader(this.components);
             this.flowLayout1 = new Syncfusion.Windows.Forms.Tools.FlowLayout(this.components);
             this.sfSkinManager1 = new Syncfusion.WinForms.Controls.SfSkinManager(this.components);
-            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-            this.metroButton1 = new MetroFramework.Controls.MetroButton();
+            this.metroProgressBar1 = new MetroFramework.Controls.MetroProgressBar();
             this.AutoPlaySetting = new MetroFramework.Controls.MetroCheckBox();
             this.youtubeVideoInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.tabControlAdv1)).BeginInit();
             this.tabControlAdv1.SuspendLayout();
             this.tabPageAdv1.SuspendLayout();
+            this.tabPageAdv2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.flowLayout1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.youtubeVideoInfoBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -79,7 +81,7 @@ namespace YoutubeDownloader
             this.tabPageAdv1.Controls.Add(this.metroLabel1);
             this.tabPageAdv1.Controls.Add(this.txtUrl);
             this.tabPageAdv1.Controls.Add(this.metroButton1);
-            this.tabPageAdv1.Controls.Add(this.AutoPlaySetting);
+            this.tabPageAdv1.Controls.Add(this.metroProgressBar1);
             this.tabPageAdv1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.tabPageAdv1.Image = null;
             this.tabPageAdv1.ImageSize = new System.Drawing.Size(20, 20);
@@ -98,24 +100,51 @@ namespace YoutubeDownloader
             this.sfListView1.ItemWidth = 356D;
             this.sfListView1.Location = new System.Drawing.Point(1, 0);
             this.sfListView1.Name = "sfListView1";
-            this.sfListView1.Size = new System.Drawing.Size(1141, 592);
+            this.sfListView1.Size = new System.Drawing.Size(1141, 566);
             this.sfListView1.TabIndex = 5;
             this.sfListView1.Text = "sfListView1";
             this.sfListView1.DoubleClick += new System.EventHandler(this.SfListView1_DoubleClick);
+            // 
+            // metroLabel1
+            // 
+            this.metroLabel1.BackColor = System.Drawing.SystemColors.Highlight;
+            this.metroLabel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.metroLabel1.FontWeight = MetroFramework.MetroLabelWeight.Regular;
+            this.metroLabel1.Location = new System.Drawing.Point(472, 571);
+            this.metroLabel1.Name = "metroLabel1";
+            this.metroLabel1.Size = new System.Drawing.Size(200, 25);
+            this.metroLabel1.Style = MetroFramework.MetroColorStyle.Black;
+            this.metroLabel1.TabIndex = 7;
+            this.metroLabel1.Text = "Video Url:";
+            this.metroLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.metroLabel1.UseCustomBackColor = true;
+            this.metroLabel1.UseStyleColors = true;
             // 
             // txtUrl
             // 
             this.txtUrl.AutoSuggestFormula = false;
             this.txtUrl.DisabledBackColor = System.Drawing.SystemColors.Window;
             this.txtUrl.EnabledBackColor = System.Drawing.SystemColors.Window;
-            this.txtUrl.Location = new System.Drawing.Point(41, 627);
+            this.txtUrl.Location = new System.Drawing.Point(41, 601);
             this.txtUrl.Name = "txtUrl";
             this.txtUrl.Size = new System.Drawing.Size(981, 22);
             this.txtUrl.TabIndex = 1;
             // 
+            // metroButton1
+            // 
+            this.metroButton1.Location = new System.Drawing.Point(1027, 601);
+            this.metroButton1.Name = "metroButton1";
+            this.metroButton1.Size = new System.Drawing.Size(75, 23);
+            this.metroButton1.TabIndex = 8;
+            this.metroButton1.Text = "Go";
+            this.metroButton1.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroButton1.UseSelectable = true;
+            this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
+            // 
             // tabPageAdv2
             // 
             this.tabPageAdv2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPageAdv2.Controls.Add(this.AutoPlaySetting);
             this.tabPageAdv2.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPageAdv2.Image = null;
             this.tabPageAdv2.ImageSize = new System.Drawing.Size(20, 20);
@@ -142,43 +171,25 @@ namespace YoutubeDownloader
             this.sfSkinManager1.ThemeName = null;
             this.sfSkinManager1.VisualTheme = Syncfusion.Windows.Forms.VisualTheme.Managed;
             // 
-            // metroLabel1
+            // metroProgressBar1
             // 
-            this.metroLabel1.BackColor = System.Drawing.SystemColors.Highlight;
-            this.metroLabel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.metroLabel1.FontWeight = MetroFramework.MetroLabelWeight.Regular;
-            this.metroLabel1.Location = new System.Drawing.Point(472, 597);
-            this.metroLabel1.Name = "metroLabel1";
-            this.metroLabel1.Size = new System.Drawing.Size(200, 25);
-            this.metroLabel1.Style = MetroFramework.MetroColorStyle.Black;
-            this.metroLabel1.TabIndex = 7;
-            this.metroLabel1.Text = "Video Url:";
-            this.metroLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.metroLabel1.UseCustomBackColor = true;
-            this.metroLabel1.UseStyleColors = true;
-            // 
-            // metroButton1
-            // 
-            this.metroButton1.Location = new System.Drawing.Point(1027, 627);
-            this.metroButton1.Name = "metroButton1";
-            this.metroButton1.Size = new System.Drawing.Size(75, 23);
-            this.metroButton1.TabIndex = 8;
-            this.metroButton1.Text = "Go";
-            this.metroButton1.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroButton1.UseSelectable = true;
-            this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
+            this.metroProgressBar1.Enabled = false;
+            this.metroProgressBar1.Location = new System.Drawing.Point(456, 629);
+            this.metroProgressBar1.Name = "metroProgressBar1";
+            this.metroProgressBar1.Size = new System.Drawing.Size(231, 23);
+            this.metroProgressBar1.TabIndex = 10;
+            this.metroProgressBar1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // AutoPlaySetting
             // 
             this.AutoPlaySetting.AutoSize = true;
             this.AutoPlaySetting.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-            this.AutoPlaySetting.Location = new System.Drawing.Point(528, 655);
+            this.AutoPlaySetting.Location = new System.Drawing.Point(9, 20);
             this.AutoPlaySetting.Name = "AutoPlaySetting";
             this.AutoPlaySetting.Size = new System.Drawing.Size(88, 20);
-            this.AutoPlaySetting.TabIndex = 9;
+            this.AutoPlaySetting.TabIndex = 10;
             this.AutoPlaySetting.Text = "Auto Play";
             this.AutoPlaySetting.UseSelectable = true;
-            this.AutoPlaySetting.CheckStateChanged += new System.EventHandler(this.AutoPlaySetting_CheckStateChanged);
             // 
             // youtubeVideoInfoBindingSource
             // 
@@ -198,6 +209,8 @@ namespace YoutubeDownloader
             this.tabControlAdv1.ResumeLayout(false);
             this.tabPageAdv1.ResumeLayout(false);
             this.tabPageAdv1.PerformLayout();
+            this.tabPageAdv2.ResumeLayout(false);
+            this.tabPageAdv2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.flowLayout1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.youtubeVideoInfoBindingSource)).EndInit();
             this.ResumeLayout(false);
@@ -217,6 +230,7 @@ namespace YoutubeDownloader
         private Syncfusion.WinForms.Controls.SfSkinManager sfSkinManager1;
         private MetroFramework.Controls.MetroLabel metroLabel1;
         private MetroFramework.Controls.MetroButton metroButton1;
+        private MetroFramework.Controls.MetroProgressBar metroProgressBar1;
         private MetroFramework.Controls.MetroCheckBox AutoPlaySetting;
     }
 }
