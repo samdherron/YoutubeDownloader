@@ -38,6 +38,54 @@ namespace YoutubeDownloader.Services
         public async Task ProcessDownloadRequestAsync(string uri)
         {
 
+            Tuple<AudioOnlyStreamInfo, Video> streamToDownload = await GetAudioStream(uri);
+
+            string safeTitle = ValidationHelper.SafeVideoTitle(streamToDownload.Item2.Title);
+
+            var videoImagePath = GetVideoImage(uri, safeTitle, streamToDownload.Item2.Id);
+
+            if (streamToDownload.Item1 != null)
+            {
+
+                YoutubeVideoInfo newVideoInfo = MapPresentableVideoInformation(safeTitle, streamToDownload.Item2, videoImagePath);
+
+                currentVideos.Add(newVideoInfo);
+
+                string safeFileName = ValidationHelper.RemoveWhitespace(streamToDownload.Item2.Title);
+
+                string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
+
+                string filePath = Path.Combine(folderPath, safeFileName + "." + streamToDownload.Item1.Container.Name);
+
+                YoutubeClient client = new YoutubeClient();
+
+                await client.Videos.Streams.DownloadAsync(streamToDownload.Item1, filePath, ProgressHandler);
+
+                var mp3FilePath = ConvertToMp3(filePath, videoImagePath);
+
+                if (MainForm.AutoPlay)
+                {
+                    Process.Start(mp3FilePath);
+                }
+
+                downloadManager.UpdateJsonDownloadRecords(currentVideos);
+
+            }
+        }
+
+        private YoutubeVideoInfo MapPresentableVideoInformation(string safeTitle, Video videoInfo, string imagePath)
+        {
+            return new YoutubeVideoInfo
+            {
+                DownloadedAt = DateTime.Now,
+                Name = safeTitle,
+                Length = videoInfo.Duration.Value,
+                VideoImagePath = imagePath
+            };
+        }
+
+        private async Task<Tuple<AudioOnlyStreamInfo, Video>> GetAudioStream(string uri)
+        {
             var youtube = new YoutubeClient();
 
             string validatedUri = ValidationHelper.RemovePlaylistIdentifier(uri);
@@ -48,48 +96,17 @@ namespace YoutubeDownloader.Services
 
             var streamInfo = streamManifest.GetAudioOnlyStreams().Where(x => x.Container.Name == "mp4").FirstOrDefault();
 
-                YoutubeVideoInfo newVideoInfo = new YoutubeVideoInfo();
-
-                string safeTitle = ValidationHelper.SafeVideoTitle(videoInfo.Title);
-
-                var videoImagePath = GetVideoImage(uri, safeTitle, videoInfo.Id);
-
-                if (streamInfo != null)
-                {
-                    newVideoInfo.Name = safeTitle;
-                    newVideoInfo.Length = videoInfo.Duration.Value;
-                    newVideoInfo.VideoImagePath = videoImagePath;
-                    newVideoInfo.DownloadedAt = DateTime.Now;
-
-                    currentVideos.Add(newVideoInfo);
-
-
-                string safeFileName = ValidationHelper.RemoveWhitespace(videoInfo.Title);
-
-                string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "YoutubeDownloader");
-
-                string filePath = Path.Combine(folderPath, safeFileName + "." + streamInfo.Container.Name);
-
-                await youtube.Videos.Streams.DownloadAsync(streamInfo, filePath, ProgressHandler);
-
-                var mp3FilePath = ConvertToMp3(filePath, videoImagePath);
-
-                if (MainForm.AutoPlay)
-                    {
-                        Process.Start(mp3FilePath);
-                    }
-
-                    downloadManager.UpdateJsonDownloadRecords(currentVideos);
-                }
+            return new Tuple<AudioOnlyStreamInfo, Video>(streamInfo, videoInfo);
         }
 
         private string GetIdString(string uri)
         {
             int index = 0;
-            if (uri.Contains("youtu.be")) 
+            if (uri.Contains("youtu.be"))
             {
                 index = uri.IndexOf(".be/");
-            } else if (uri.Contains("?v="))
+            }
+            else if (uri.Contains("?v="))
             {
                 index = uri.IndexOf("h?v=");
             }
@@ -97,8 +114,9 @@ namespace YoutubeDownloader.Services
             return uri.Substring(index + 4);
         }
 
-       
-        public string ConvertToMp3(string filePath, string videoImagePath) { 
+
+        public string ConvertToMp3(string filePath, string videoImagePath)
+        {
             string mp3FilePath = filePath.Replace(".mp4", ".mp3");
 
 
@@ -171,7 +189,8 @@ namespace YoutubeDownloader.Services
                 try
                 {
                     data = webClient.DownloadData(imageUri);
-                } catch
+                }
+                catch
                 {
                     data = webClient.DownloadData(backupImageUri);
                 }
